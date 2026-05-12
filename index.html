@@ -23,6 +23,12 @@
                     <p>MEDS: <span id="meds-val">50</span></p>
                     <p>CARED FOR: <span id="patients-val">0</span></p>
                 </div>
+                <div id="start-leaderboard" style="font-size: 14px; margin-bottom: 10px;">
+                    <p style="text-decoration: underline;">TOP OPERATORS</p>
+                    <ul id="leaderboard-list" class="leaderboard-list">
+                        <li>LOADING DATA...</li>
+                    </ul>
+                </div>
                 <div id="event-log-container">
                     <p id="event-log">Ready to depart.</p>
                 </div>
@@ -33,6 +39,15 @@
                 </div>
                 <div id="event-choice-menu" class="hidden"></div>
                 <p class="prompt-text">Press 1, 2, or 3 <span class="blinking-cursor">_</span></p>
+            </div>
+
+            <div id="initials-screen" class="screen hidden centered">
+                <h2>NEW HIGH SCORE!</h2>
+                <p>SCORE: <span id="new-high-score-display">0</span></p>
+                <p>ENTER FIRST NAME:</p>
+                <input id="initials-input" type="text" maxlength="15" autocomplete="off" spellcheck="false" placeholder="NAME" />
+                <p style="font-size: 16px; margin-top: 15px;">Press ENTER to submit</p>
+                <div id="upload-status" style="font-size: 14px; margin-top: 10px; color: yellow;"></div>
             </div>
 
             <div id="game-over-screen" class="screen centered hidden">

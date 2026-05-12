@@ -9,10 +9,40 @@ let state = {
     day: 1,
     patientsTreated: 0,
     gameOver: false,
-    win: false,
     awaitingChoice: false,
-    currentEvent: null
+    currentEvent: null,
+    initialsMode: false
 };
+
+const API_URL = "https://script.google.com/macros/s/AKfycbxEcmKfj9-Tg5K9QlM1-LXAwycNaplQNBtrELz_qQt5LDkL27BmfntC-RnmNatfJPKs/exec";
+let globalLeaderboard = [];
+const leaderboardList = document.getElementById('leaderboard-list');
+const initialsScreen = document.getElementById('initials-screen');
+const initialsInput = document.getElementById('initials-input');
+const uploadStatus = document.getElementById('upload-status');
+const newHighScoreDisplay = document.getElementById('new-high-score-display');
+
+async function fetchLeaderboard() {
+    try {
+        const response = await fetch(API_URL + "?game=An IHNC Trail");
+        const data = await response.json();
+        globalLeaderboard = data;
+        
+        leaderboardList.innerHTML = '';
+        if (data.length === 0) {
+            leaderboardList.innerHTML = '<li>NO SCORES YET</li>';
+        } else {
+            data.forEach(entry => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${entry.initials}</span> <span class="leaderboard-score">${entry.score}</span>`;
+                leaderboardList.appendChild(li);
+            });
+        }
+    } catch (e) {
+        leaderboardList.innerHTML = '<li>ERROR LOADING DATA</li>';
+    }
+}
+fetchLeaderboard();
 
 const GOAL_DISTANCE = 500;
 
@@ -180,6 +210,7 @@ let travelTimer = 0;
 
 document.addEventListener('keydown', (e) => {
     if (state.gameOver || state.win) {
+        if (state.initialsMode) return; // Wait for enter on initials input
         if (e.key === ' ' || e.key === 'Spacebar') {
             resetGame();
         }
@@ -199,6 +230,51 @@ document.addEventListener('keydown', (e) => {
         rest();
     } else if (e.key === '3') {
         checkInventory();
+    }
+});
+
+initialsInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && initialsInput.value.trim().length > 0 && state.initialsMode) {
+        uploadStatus.textContent = 'UPLOADING...';
+        initialsInput.disabled = true;
+        
+        let finalScore = 0;
+        if (state.win) {
+            finalScore = 5000 - (state.day * 50);
+            finalScore += state.fuel * 10;
+            finalScore += state.supplies * 20;
+            finalScore += state.energy * 5;
+            finalScore += state.patientsTreated * 1000;
+        } else {
+            finalScore = state.distance * 5; 
+            finalScore += state.patientsTreated * 1000;
+        }
+
+        let payload = {
+            game: "An IHNC Trail",
+            initials: initialsInput.value.toUpperCase().substring(0, 15),
+            score: finalScore
+        };
+
+        fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            fetchLeaderboard().then(() => {
+                initialsScreen.classList.add('hidden');
+                state.initialsMode = false;
+                if (state.win) {
+                    document.getElementById('win-screen').classList.remove('hidden');
+                } else {
+                    document.getElementById('game-over-screen').classList.remove('hidden');
+                }
+            });
+        }).catch(err => {
+            uploadStatus.textContent = 'ERROR UPLOADING';
+            initialsInput.disabled = false;
+        });
     }
 });
 
@@ -397,7 +473,30 @@ function triggerGameOver(reason) {
     document.getElementById('loss-score').innerText = finalScore;
     
     document.getElementById('main-screen').classList.add('hidden');
-    document.getElementById('game-over-screen').classList.remove('hidden');
+
+    let isGlobalHighScore = false;
+    if (finalScore > 0) {
+        if (globalLeaderboard.length < 3) {
+            isGlobalHighScore = true;
+        } else {
+            const lowestTopScore = globalLeaderboard[globalLeaderboard.length - 1].score;
+            if (finalScore > lowestTopScore) {
+                isGlobalHighScore = true;
+            }
+        }
+    }
+
+    if (isGlobalHighScore) {
+        state.initialsMode = true;
+        newHighScoreDisplay.textContent = finalScore;
+        initialsInput.value = '';
+        uploadStatus.textContent = '';
+        initialsInput.disabled = false;
+        initialsScreen.classList.remove('hidden');
+        setTimeout(() => initialsInput.focus(), 100);
+    } else {
+        document.getElementById('game-over-screen').classList.remove('hidden');
+    }
 }
 
 function checkEndConditions() {
@@ -416,7 +515,30 @@ function checkEndConditions() {
         document.getElementById('win-days').innerText = state.day;
         document.getElementById('win-score').innerText = finalScore;
         document.getElementById('main-screen').classList.add('hidden');
-        document.getElementById('win-screen').classList.remove('hidden');
+
+        let isGlobalHighScore = false;
+        if (finalScore > 0) {
+            if (globalLeaderboard.length < 3) {
+                isGlobalHighScore = true;
+            } else {
+                const lowestTopScore = globalLeaderboard[globalLeaderboard.length - 1].score;
+                if (finalScore > lowestTopScore) {
+                    isGlobalHighScore = true;
+                }
+            }
+        }
+
+        if (isGlobalHighScore) {
+            state.initialsMode = true;
+            newHighScoreDisplay.textContent = finalScore;
+            initialsInput.value = '';
+            uploadStatus.textContent = '';
+            initialsInput.disabled = false;
+            initialsScreen.classList.remove('hidden');
+            setTimeout(() => initialsInput.focus(), 100);
+        } else {
+            document.getElementById('win-screen').classList.remove('hidden');
+        }
         return;
     }
     
@@ -448,7 +570,8 @@ function resetGame() {
         gameOver: false,
         win: false,
         awaitingChoice: false,
-        currentEvent: null
+        currentEvent: null,
+        initialsMode: false
     };
     
     document.getElementById('game-over-screen').classList.add('hidden');

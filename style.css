@@ -179,3 +179,40 @@ canvas {
     pointer-events: none;
     z-index: 20;
 }
+
+#initials-input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--terminal-green);
+    color: var(--terminal-green);
+    font-family: 'VT323', 'Courier New', Courier, monospace;
+    font-size: 48px;
+    text-align: center;
+    width: 250px;
+    text-transform: uppercase;
+    outline: none;
+    margin-top: 10px;
+}
+
+#initials-input::placeholder {
+    color: rgba(51, 255, 0, 0.3);
+}
+
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    text-align: left;
+    font-size: 20px;
+}
+
+.leaderboard-list li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    border-bottom: 1px dashed rgba(51, 255, 0, 0.2);
+}
+
+.leaderboard-score {
+    text-align: right;
+}
