@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>An IHNC Trail: The 'Mobile' Journey</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="main-container">
+        <div id="canvas-section">
+            <canvas id="gameCanvas" width="400" height="600"></canvas>
+        </div>
+        <div id="ui-section">
+            <div id="main-screen" class="screen">
+                <h2>AN IHNC TRAIL</h2>
+                <div id="stats-display">
+                    <p>DIST: <span id="dist-val">0</span>/500 MI</p>
+                    <p>DAY: <span id="day-val">1</span></p>
+                    <p>FUEL: <span id="fuel-val">100</span></p>
+                    <p>NRGY: <span id="nrgy-val">100</span></p>
+                    <p>MEDS: <span id="meds-val">50</span></p>
+                    <p>CARED FOR: <span id="patients-val">0</span></p>
+                </div>
+                <div id="event-log-container">
+                    <p id="event-log">Ready to depart.</p>
+                </div>
+                <div id="action-menu">
+                    <p>1. Travel the road</p>
+                    <p>2. Rest the staff</p>
+                    <p>3. Check inventory</p>
+                </div>
+                <div id="event-choice-menu" class="hidden"></div>
+                <p class="prompt-text">Press 1, 2, or 3 <span class="blinking-cursor">_</span></p>
+            </div>
+
+            <div id="game-over-screen" class="screen centered hidden">
+                <h2 id="end-title" style="font-size: 48px;">FLATLINE</h2>
+                <p id="end-reason">You ran out of resources.</p>
+                <br>
+                <div class="score-breakdown">
+                    <p>DISTANCE: <span id="final-dist">0</span>/500 MI</p>
+                    <p>CARED FOR: <span id="loss-patients">0</span></p>
+                </div>
+                <div class="massive-score-container">
+                    <p>FINAL SCORE</p>
+                    <h1 id="loss-score" class="massive-score">0</h1>
+                </div>
+                <p class="prompt-text">Press SPACE to RESTART <span class="blinking-cursor">_</span></p>
+            </div>
+
+            <div id="win-screen" class="screen centered hidden">
+                <h2 style="font-size: 48px;">CURED!</h2>
+                <p>MISSION ACCOMPLISHED.</p>
+                <p>You reached the outpost.</p>
+                <br>
+                <div class="score-breakdown">
+                    <p>CARED FOR: <span id="win-patients">0</span></p>
+                    <p>DAYS TAKEN: <span id="win-days">0</span></p>
+                </div>
+                <div class="massive-score-container">
+                    <p>FINAL SCORE</p>
+                    <h1 id="win-score" class="massive-score">0</h1>
+                </div>
+                <p class="prompt-text">Press SPACE to PLAY AGAIN <span class="blinking-cursor">_</span></p>
+            </div>
+        </div>
+        <div class="scanlines"></div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
